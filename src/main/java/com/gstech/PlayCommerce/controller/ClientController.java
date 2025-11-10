@@ -23,5 +23,13 @@ public class ClientController {
         ClientResponseDTO responseDTO = clientService.createClient(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientResponseDTO> updateClient(
+            @PathVariable Long id,
+            @Valid @RequestBody ClientRequestDTO requestDTO) {
+        ClientResponseDTO responseDTO = clientService.updateClient(id, requestDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
 }
 
