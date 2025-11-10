@@ -1,0 +1,47 @@
+package com.gstech.PlayCommerce.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = "tb_game")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class Game {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private String name;
+    private String description;
+    private String developer;
+    private String publisher;
+    private LocalDate releaseDate;
+    private BigDecimal price;
+    private String classification;
+    private String linkDownload;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToMany(mappedBy = "games")
+    private Set<Client> clients = new HashSet<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<BuyGame> buyGames = new ArrayList<>();
+
+}
