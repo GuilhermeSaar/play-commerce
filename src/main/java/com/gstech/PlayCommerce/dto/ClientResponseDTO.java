@@ -1,5 +1,8 @@
 package com.gstech.PlayCommerce.dto;
 
+import com.gstech.PlayCommerce.UserRole;
+import com.gstech.PlayCommerce.model.Client;
+
 import java.time.LocalDateTime;
 
 public record ClientResponseDTO(
@@ -8,7 +11,20 @@ public record ClientResponseDTO(
         String cpf,
         String email,
         String phone,
-        LocalDateTime dateRegister
+        LocalDateTime dateRegister,
+        UserRole role
 ) {
+
+    public ClientResponseDTO(Client client) {
+        this(
+                client.getId(),
+                client.getName(),
+                client.getCpf(),
+                client.getEmail(),
+                client.getPhone(),
+                client.getDateRegister(),
+                client.getRole()
+        );
+    }
 }
 

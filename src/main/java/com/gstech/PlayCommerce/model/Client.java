@@ -1,5 +1,7 @@
 package com.gstech.PlayCommerce.model;
 
+import com.gstech.PlayCommerce.UserRole;
+import com.gstech.PlayCommerce.dto.ClientRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +23,7 @@ import java.util.Set;
 public class Client {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -29,6 +31,12 @@ public class Client {
     private String email;
     private String phone;
     private LocalDateTime dateRegister;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @OneToMany(mappedBy = "client")
     private List<Buy> buyList = new ArrayList<>();
@@ -40,4 +48,15 @@ public class Client {
             inverseJoinColumns = @JoinColumn(name = "jogo_id")
     )
     private Set<Game> games = new HashSet<>();
+
+
+    public Client(ClientRequestDTO request, String password) {
+        this.name = request.name();
+        this.cpf = request.cpf();
+        this.email = request.email();
+        this.phone = request.phone();
+        this.dateRegister = LocalDateTime.now();
+        this.password = password;
+        this.role = UserRole.USER;
+    }
 }

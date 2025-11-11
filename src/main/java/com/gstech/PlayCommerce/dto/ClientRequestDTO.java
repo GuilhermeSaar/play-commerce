@@ -1,10 +1,10 @@
 package com.gstech.PlayCommerce.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.gstech.PlayCommerce.UserRole;
+import jakarta.validation.constraints.*;
 
 public record ClientRequestDTO(
+
         @NotBlank(message = "Nome é obrigatório")
         String name,
 
@@ -17,7 +17,12 @@ public record ClientRequestDTO(
         String email,
 
         @NotBlank(message = "Telefone é obrigatório")
-        String phone
-) {
-}
+        String phone,
+
+        @NotBlank(message = "Senha é obrigatória")
+        @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
+        String password
+
+) {}
+
 
