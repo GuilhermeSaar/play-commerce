@@ -57,10 +57,10 @@ As transações de compra poderão conter múltiplos jogos e estarão vinculadas
 
 ## 🗂️ Modelagem de Dados
 
-A modelagem do banco de dados foi criada com base nos requisitos funcionais implementados até o momento.  
-Ela representa as principais entidades do sistema, incluindo **Cliente**, **Jogo**, **Categoria**, **Compra**, **Pagamento**, **Biblioteca** e suas relações.
+A modelagem do banco de dados foi criada com base nos requisitos funcionais.  
+Ela representa as principais entidades do sistema.
 
-![Modelagem de Dados](modelagem.jpg)
+![Modelagem de Dados](docs/modelagem.jpg)
 
 ---
 
