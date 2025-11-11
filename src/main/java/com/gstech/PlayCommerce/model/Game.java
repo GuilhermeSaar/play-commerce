@@ -1,5 +1,6 @@
 package com.gstech.PlayCommerce.model;
 
+import com.gstech.PlayCommerce.dto.GameRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import java.util.Set;
 public class Game {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -33,6 +34,18 @@ public class Game {
     private BigDecimal price;
     private String classification;
     private String linkDownload;
+
+    public Game(GameRequestDTO request, Category category) {
+        this.name = request.name();
+        this.description = request.description();
+        this.developer = request.developer();
+        this.publisher = request.publisher();
+        this.releaseDate = request.releaseDate();
+        this.price = request.price();
+        this.classification = request.classification();
+        this.linkDownload = request.linkDownload();
+        this.category = category;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
