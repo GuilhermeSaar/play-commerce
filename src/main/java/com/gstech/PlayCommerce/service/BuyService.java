@@ -21,7 +21,6 @@ import java.util.List;
 @Service
 public class BuyService {
 
-
     private final BuyRepository buyRepository;
     private final ClientRepository clientRepository;
     private final GameRepository gameRepository;
@@ -47,6 +46,10 @@ public class BuyService {
         for (Long gameId : request.gameIds()) {
             Game game = gameRepository.findById(gameId)
                     .orElseThrow(() -> new ResourceNotFoundException("Jogo com id " + gameId + " não encontrado"));
+
+            if (!game.isAvailable()) {
+                throw new ResourceNotFoundException("Jogo com id " + gameId + " não está disponível");
+            }
 
             BuyGame buyGame = new BuyGame();
             buyGame.setBuy(buy);

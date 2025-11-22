@@ -7,21 +7,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record GameRequestDTO(
-        @NotBlank(message = "Nome é obrigatório")
-        String name,
+                @NotBlank(message = "Nome é obrigatório") String name,
 
-        String description,
+                String description,
 
-        String developer,
-        String publisher,
-        LocalDate releaseDate,
+                String developer,
+                String publisher,
+                LocalDate releaseDate,
 
-        @NotNull(message = "Preço é obrigatório")
-        BigDecimal price,
-        String classification,
+                @NotNull(message = "Preço é obrigatório") BigDecimal price,
+                String classification,
 
-        @NotBlank(message = "Link de download é obrigatório")
-        String linkDownload,
-        Long categoryId
-) {
+                @NotBlank(message = "Link de download é obrigatório") String linkDownload,
+
+                Boolean available,
+                Long categoryId) {
 }

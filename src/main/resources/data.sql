@@ -3,14 +3,14 @@ INSERT INTO tb_client (name, cpf, email, phone, date_register, password, role)
     VALUES ('admin', '13685614578', 'teste@gmail.com', '19999563025', NOW(), '$2a$10$d7RMUSY0Ofd8bjt.fmRdWu3L.u3fhC0skvD3NuZr9Gc5w4ehH3xZO', 'ADMIN');
 
 
-INSERT INTO tb_category (name)
+INSERT INTO tb_category (id, name)
 VALUES
-    ('Ação'),
-    ('RPG'),
-    ('Aventura');
+    (1, 'Ação'),
+    (2, 'RPG'),
+    (3, 'Aventura');
 
 INSERT INTO tb_game
-(name, description, developer, publisher, release_date, price, classification, link_download, category_id)
+(name, description, developer, publisher, release_date, price, classification, link_download, category_id, available)
 VALUES
     ('Shadow of Eternia',
      'RPG de mundo aberto onde o jogador enfrenta criaturas das trevas para restaurar o equilíbrio do reino.',
@@ -20,7 +20,8 @@ VALUES
      199.90,
      '12+',
      'https://download.com/shadow-eternia',
-     2),
+     2,
+     true),
 
     ('CyberStrike Protocol',
      'Jogo de ação futurista com combates rápidos e missões táticas em uma metrópole cibernética.',
@@ -30,7 +31,8 @@ VALUES
      149.50,
      '16+',
      'https://download.com/cyberstrike-protocol',
-     1),
+     1,
+     true),
 
     ('Mystic Tales: The Lost Oracle',
      'Aventura narrativa com puzzles e escolhas que alteram profundamente a história.',
@@ -40,7 +42,8 @@ VALUES
      89.99,
      '10+',
      'https://download.com/mystic-tales',
-     3),
+     3,
+     true),
 
     ('Metal Fangs Arena',
      'Shooter multiplayer frenético com arenas cheias de armadilhas e armas personalizáveis.',
@@ -50,7 +53,8 @@ VALUES
      129.00,
      '18+',
      'https://download.com/metal-fangs',
-     1),
+     1,
+     true),
 
     ('Galactic Frontier EX',
      'Simulador espacial onde o jogador explora galáxias, expande frotas e negocia com civilizações alienígenas.',
@@ -60,4 +64,5 @@ VALUES
      249.99,
      'Livre',
      'https://download.com/galactic-frontier-ex',
-     2);
+     2,
+     true);
