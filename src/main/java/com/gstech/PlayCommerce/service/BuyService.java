@@ -66,7 +66,7 @@ public class BuyService {
         buy.setBuyGames(buyGames);
         Buy savedBuy = buyRepository.save(buy);
 
-        // Cria o pagamento para a compra (RF8, RF12)
+
         Payment payment = paymentService.createPayment(savedBuy, client, request.payment());
         savedBuy.setPayment(payment);
 
