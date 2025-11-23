@@ -29,4 +29,12 @@ public class Payment {
 
     private LocalDateTime paymentDate;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buy_id", nullable = false)
+    private Buy buy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
 }

@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.dto;
 
-import com.gstech.PlayCommerce.UserRole;
+import com.gstech.PlayCommerce.model.enums.UserRole;
 import com.gstech.PlayCommerce.model.Client;
 
 import java.time.LocalDateTime;

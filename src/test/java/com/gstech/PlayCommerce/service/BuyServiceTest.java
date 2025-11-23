@@ -2,7 +2,10 @@ package com.gstech.PlayCommerce.service;
 
 import com.gstech.PlayCommerce.dto.BuyRequestDTO;
 import com.gstech.PlayCommerce.dto.BuyResponseDTO;
+import com.gstech.PlayCommerce.dto.PaymentRequestDTO;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
+import com.gstech.PlayCommerce.model.enums.PaymentStatusType;
+import com.gstech.PlayCommerce.model.enums.PaymentType;
 import com.gstech.PlayCommerce.model.Buy;
 import com.gstech.PlayCommerce.model.Client;
 import com.gstech.PlayCommerce.model.Game;
@@ -36,6 +39,9 @@ class BuyServiceTest {
 
     @Mock
     private GameRepository gameRepository;
+
+    @Mock
+    private PaymentService paymentService;
 
     @InjectMocks
     private BuyService buyService;
@@ -75,15 +81,14 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long gameId = 1L;
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId));
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.APROVADO);
+        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game1));
         when(buyRepository.save(any(Buy.class))).thenReturn(buy);
 
-
         BuyResponseDTO response = buyService.createBuy(request);
-
 
         assertNotNull(response);
         verify(clientRepository, times(1)).findById(clientId);
@@ -96,16 +101,16 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         List<Long> gameIds = Arrays.asList(1L, 2L);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, gameIds);
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.CARTAO_CREDITO,
+                PaymentStatusType.APROVADO);
+        BuyRequestDTO request = new BuyRequestDTO(clientId, gameIds, paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game1));
         when(gameRepository.findById(2L)).thenReturn(Optional.of(game2));
         when(buyRepository.save(any(Buy.class))).thenReturn(buy);
 
-
         BuyResponseDTO response = buyService.createBuy(request);
-
 
         assertNotNull(response);
         verify(clientRepository, times(1)).findById(clientId);
@@ -119,10 +124,10 @@ class BuyServiceTest {
 
         Long clientId = 999L;
         Long gameId = 1L;
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId));
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PAYPAL, PaymentStatusType.PENDENTE);
+        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
-
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
@@ -139,11 +144,11 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long invalidGameId = 999L;
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(invalidGameId));
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.BOLETO, PaymentStatusType.RECUSADO);
+        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(invalidGameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(invalidGameId)).thenReturn(Optional.empty());
-
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
@@ -160,7 +165,8 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long gameId = 1L;
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId));
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.PENDENTE);
+        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
 
         game1.setAvailable(false);
 

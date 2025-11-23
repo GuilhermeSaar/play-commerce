@@ -7,10 +7,10 @@ import com.gstech.PlayCommerce.model.Buy;
 import com.gstech.PlayCommerce.model.BuyGame;
 import com.gstech.PlayCommerce.model.Client;
 import com.gstech.PlayCommerce.model.Game;
+import com.gstech.PlayCommerce.model.Payment;
 import com.gstech.PlayCommerce.repository.BuyRepository;
 import com.gstech.PlayCommerce.repository.ClientRepository;
 import com.gstech.PlayCommerce.repository.GameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +24,14 @@ public class BuyService {
     private final BuyRepository buyRepository;
     private final ClientRepository clientRepository;
     private final GameRepository gameRepository;
+    private final PaymentService paymentService;
 
-    public BuyService(BuyRepository buyRepository, ClientRepository clientRepository, GameRepository gameRepository) {
+    public BuyService(BuyRepository buyRepository, ClientRepository clientRepository,
+            GameRepository gameRepository, PaymentService paymentService) {
         this.buyRepository = buyRepository;
         this.clientRepository = clientRepository;
         this.gameRepository = gameRepository;
+        this.paymentService = paymentService;
     }
 
     @Transactional
@@ -61,8 +64,12 @@ public class BuyService {
         }
 
         buy.setBuyGames(buyGames);
-        buyRepository.save(buy);
+        Buy savedBuy = buyRepository.save(buy);
 
-        return new BuyResponseDTO(buy);
+        // Cria o pagamento para a compra (RF8, RF12)
+        Payment payment = paymentService.createPayment(savedBuy, client, request.payment());
+        savedBuy.setPayment(payment);
+
+        return new BuyResponseDTO(savedBuy);
     }
 }

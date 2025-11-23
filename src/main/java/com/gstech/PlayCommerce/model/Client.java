@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.model;
 
-import com.gstech.PlayCommerce.UserRole;
+import com.gstech.PlayCommerce.model.enums.UserRole;
 import com.gstech.PlayCommerce.dto.ClientRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

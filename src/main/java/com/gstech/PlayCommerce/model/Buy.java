@@ -24,12 +24,14 @@ public class Buy {
     private LocalDateTime date;
     private String status;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", nullable = false)
     private Client client;
 
     @OneToMany(mappedBy = "buy", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BuyGame> buyGames = new ArrayList<>();
+
+    @OneToOne(mappedBy = "buy", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Payment payment;
 
 }

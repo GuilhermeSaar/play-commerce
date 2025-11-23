@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.security;
 
-import com.gstech.PlayCommerce.UserRole;
+import com.gstech.PlayCommerce.model.enums.UserRole;
 import com.gstech.PlayCommerce.model.Client;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

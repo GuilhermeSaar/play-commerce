@@ -1,6 +1,5 @@
 package com.gstech.PlayCommerce.dto;
 
-import com.gstech.PlayCommerce.UserRole;
 import jakarta.validation.constraints.*;
 
 public record ClientRequestDTO(
