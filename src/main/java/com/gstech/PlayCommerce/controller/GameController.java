@@ -4,7 +4,6 @@ import com.gstech.PlayCommerce.dto.GameRequestDTO;
 import com.gstech.PlayCommerce.dto.GameResponseDTO;
 import com.gstech.PlayCommerce.service.GameService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/games")
 public class GameController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     @PostMapping
     public ResponseEntity<GameResponseDTO> createGame(@Valid @RequestBody GameRequestDTO request) {

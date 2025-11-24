@@ -3,6 +3,7 @@ package com.gstech.PlayCommerce.service;
 import com.gstech.PlayCommerce.dto.ClientRequestDTO;
 import com.gstech.PlayCommerce.dto.ClientResponseDTO;
 import com.gstech.PlayCommerce.dto.GameResponseDTO;
+import com.gstech.PlayCommerce.dto.UpdateRequestDTO;
 import com.gstech.PlayCommerce.exception.DuplicateResourceException;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
 import com.gstech.PlayCommerce.model.Client;
@@ -21,10 +22,14 @@ import java.util.stream.Collectors;
 @Service
 public class ClientService {
 
-    @Autowired
-    private ClientRepository clientRepository;
-    @Autowired
-    private PasswordEncoder encoder;
+    private final ClientRepository clientRepository;
+    private final PasswordEncoder encoder;
+
+
+    public ClientService(ClientRepository clientRepository, PasswordEncoder encoder) {
+        this.clientRepository = clientRepository;
+        this.encoder = encoder;
+    }
 
     @Transactional
     public ClientResponseDTO createClient(ClientRequestDTO request) {
@@ -49,7 +54,7 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientResponseDTO updateClient(Long id, ClientRequestDTO request) {
+    public ClientResponseDTO updateClient(Long id, UpdateRequestDTO request) {
 
         var client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente com id " + id + " não encontrado"));
@@ -58,11 +63,17 @@ public class ClientService {
             client.setPassword(encoder.encode(request.password()));
         }
 
-        Optional.ofNullable(request.name()).ifPresent(client::setName);
-        Optional.ofNullable(request.phone()).ifPresent(client::setPhone);
+        if (request.name() != null && !request.name().isBlank()) {
+            client.setName(request.name());
+        }
 
+        if (request.phone() != null && !request.phone().isBlank()) {
+            client.setPhone(request.phone());
+        }
 
-        Optional.ofNullable(request.email()).ifPresent(newEmail -> {
+        if (request.email() != null && !request.email().isBlank()) {
+            var newEmail = request.email();
+
             clientRepository.findByEmail(newEmail)
                     .ifPresent(existingClient -> {
                         if (!existingClient.getId().equals(id)) {
@@ -70,16 +81,10 @@ public class ClientService {
                                     "Cliente com email " + newEmail + " já está cadastrado");
                         }
                     });
-        });
 
-        Optional.ofNullable(request.cpf()).ifPresent(newCpf -> {
-            clientRepository.findByCpf(newCpf)
-                    .ifPresent(existingClient -> {
-                        if (!existingClient.getId().equals(id)) {
-                            throw new DuplicateResourceException("Cliente com CPF " + newCpf + " já está cadastrado");
-                        }
-                    });
-        });
+            client.setEmail(newEmail);
+        }
+
         return new ClientResponseDTO(clientRepository.save(client));
     }
 

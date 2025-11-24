@@ -2,6 +2,7 @@ package com.gstech.PlayCommerce.service;
 
 import com.gstech.PlayCommerce.dto.ClientRequestDTO;
 import com.gstech.PlayCommerce.dto.ClientResponseDTO;
+import com.gstech.PlayCommerce.dto.UpdateRequestDTO;
 import com.gstech.PlayCommerce.exception.DuplicateResourceException;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
 import com.gstech.PlayCommerce.model.Client;
@@ -57,6 +58,7 @@ class ClientServiceTest {
                 client.setEmail("john.doe@example.com");
                 client.setPhone("11987654321");
                 client.setPassword("encodedPassword");
+
         }
 
         @Test
@@ -112,42 +114,85 @@ class ClientServiceTest {
 
         @Test
         void shouldUpdateClientSuccessfully_WhenDataIsValid() {
-
                 Long clientId = 1L;
-                ClientRequestDTO updateRequest = new ClientRequestDTO(
+
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO(
                                 "Jane Doe",
-                                "12345678901",
                                 "jane.doe@example.com",
                                 "11999999999",
-                                null);
+                                null // senha null -> não deve atualizar
+                );
+
+                // Mock do cliente já existente
+                Client client = new Client();
+                client.setId(clientId);
+                client.setName("Old Name");
+                client.setEmail("old@example.com");
+                client.setPhone("11888888888");
+                client.setPassword("old-pass");
 
                 when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
                 when(clientRepository.findByEmail(updateRequest.email())).thenReturn(Optional.empty());
-                when(clientRepository.findByCpf(updateRequest.cpf())).thenReturn(Optional.of(client));
                 when(clientRepository.save(any(Client.class))).thenReturn(client);
 
                 ClientResponseDTO response = clientService.updateClient(clientId, updateRequest);
 
                 assertNotNull(response);
-                verify(clientRepository, times(1)).findById(clientId);
-                verify(clientRepository, times(1)).save(any(Client.class));
-                verify(passwordEncoder, never()).encode(anyString()); // Password is null, should not encode
+                assertEquals("Jane Doe", client.getName());
+                assertEquals("jane.doe@example.com", client.getEmail());
+                assertEquals("11999999999", client.getPhone());
+                assertEquals("old-pass", client.getPassword()); // senha não alterada
+
+                verify(clientRepository).findById(clientId);
+                verify(clientRepository).findByEmail("jane.doe@example.com");
+                verify(clientRepository).save(any(Client.class));
+                verify(passwordEncoder, never()).encode(anyString());
         }
 
         @Test
-        void shouldUpdateClientPassword_WhenPasswordIsProvided() {
-
+        void shouldUpdateOnlyProvidedFields_WhenPartialDataIsProvided() {
                 Long clientId = 1L;
-                ClientRequestDTO updateRequest = new ClientRequestDTO(
-                                "John Doe",
-                                "12345678901",
-                                "john.doe@example.com",
-                                "11987654321",
+
+                // Apenas nome e telefone, email e senha null
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO(
+                                "Jane Doe",
+                                null,
+                                "11999999999",
+                                null);
+
+                Client client = new Client();
+                client.setId(clientId);
+                client.setName("Old Name");
+                client.setEmail("old@example.com");
+                client.setPhone("11888888888");
+                client.setPassword("old-pass");
+
+                when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+                when(clientRepository.save(any(Client.class))).thenReturn(client);
+
+                ClientResponseDTO response = clientService.updateClient(clientId, updateRequest);
+
+                assertNotNull(response);
+                assertEquals("Jane Doe", client.getName()); // Atualizado
+                assertEquals("old@example.com", client.getEmail()); // Mantido
+                assertEquals("11999999999", client.getPhone()); // Atualizado
+                assertEquals("old-pass", client.getPassword()); // Mantido
+
+                verify(clientRepository).findById(clientId);
+                verify(clientRepository, never()).findByEmail(anyString()); // Email null, não valida
+                verify(clientRepository).save(any(Client.class));
+        }
+
+        @Test
+        void shouldUpdatePassword_WhenPasswordIsProvided() {
+                Long clientId = 1L;
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO(
+                                null,
+                                null,
+                                null,
                                 "newPassword123");
 
                 when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-                when(clientRepository.findByEmail(updateRequest.email())).thenReturn(Optional.of(client));
-                when(clientRepository.findByCpf(updateRequest.cpf())).thenReturn(Optional.of(client));
                 when(passwordEncoder.encode(updateRequest.password())).thenReturn("newEncodedPassword");
                 when(clientRepository.save(any(Client.class))).thenReturn(client);
 
@@ -159,19 +204,16 @@ class ClientServiceTest {
         }
 
         @Test
-        void shouldNotUpdatePassword_WhenPasswordIsBlankOrNull() {
-
+        void shouldNotUpdatePassword_WhenPasswordIsBlank() {
                 Long clientId = 1L;
-                ClientRequestDTO updateRequest = new ClientRequestDTO(
-                                "John Doe",
-                                "12345678901",
-                                "john.doe@example.com",
-                                "11987654321",
-                                "");
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO(
+                                null,
+                                null,
+                                null,
+                                "   " // Blank
+                );
 
                 when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-                when(clientRepository.findByEmail(updateRequest.email())).thenReturn(Optional.of(client));
-                when(clientRepository.findByCpf(updateRequest.cpf())).thenReturn(Optional.of(client));
                 when(clientRepository.save(any(Client.class))).thenReturn(client);
 
                 ClientResponseDTO response = clientService.updateClient(clientId, updateRequest);
@@ -183,13 +225,14 @@ class ClientServiceTest {
 
         @Test
         void shouldThrowResourceNotFoundException_WhenClientNotFoundForUpdate() {
-
                 Long invalidClientId = 999L;
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO("Name", "email@email.com", "123", "pass");
+
                 when(clientRepository.findById(invalidClientId)).thenReturn(Optional.empty());
 
                 ResourceNotFoundException exception = assertThrows(
                                 ResourceNotFoundException.class,
-                                () -> clientService.updateClient(invalidClientId, validRequest));
+                                () -> clientService.updateClient(invalidClientId, updateRequest));
 
                 assertTrue(exception.getMessage().contains("Cliente com id " + invalidClientId + " não encontrado"));
                 verify(clientRepository, times(1)).findById(invalidClientId);
@@ -198,17 +241,15 @@ class ClientServiceTest {
 
         @Test
         void shouldThrowDuplicateResourceException_WhenUpdatingToExistingEmail() {
-
                 Long clientId = 1L;
                 Client anotherClient = new Client();
                 anotherClient.setId(2L);
                 anotherClient.setEmail("another@example.com");
 
-                ClientRequestDTO updateRequest = new ClientRequestDTO(
-                                "John Doe",
-                                "12345678901",
+                UpdateRequestDTO updateRequest = new UpdateRequestDTO(
+                                null,
                                 "another@example.com",
-                                "11987654321",
+                                null,
                                 null);
 
                 when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
@@ -218,38 +259,8 @@ class ClientServiceTest {
                                 DuplicateResourceException.class,
                                 () -> clientService.updateClient(clientId, updateRequest));
 
-                assertTrue(
-                                exception.getMessage().contains(
-                                                "Cliente com email " + updateRequest.email() + " já está cadastrado"));
-                verify(clientRepository, times(1)).findById(clientId);
-                verify(clientRepository, never()).save(any(Client.class));
-        }
-
-        @Test
-        void shouldThrowDuplicateResourceException_WhenUpdatingToExistingCpf() {
-
-                Long clientId = 1L;
-                Client anotherClient = new Client();
-                anotherClient.setId(2L);
-                anotherClient.setCpf("98765432100");
-
-                ClientRequestDTO updateRequest = new ClientRequestDTO(
-                                "John Doe",
-                                "98765432100",
-                                "john.doe@example.com",
-                                "11987654321",
-                                null);
-
-                when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-                when(clientRepository.findByEmail(updateRequest.email())).thenReturn(Optional.of(client));
-                when(clientRepository.findByCpf(updateRequest.cpf())).thenReturn(Optional.of(anotherClient));
-
-                DuplicateResourceException exception = assertThrows(
-                                DuplicateResourceException.class,
-                                () -> clientService.updateClient(clientId, updateRequest));
-
                 assertTrue(exception.getMessage()
-                                .contains("Cliente com CPF " + updateRequest.cpf() + " já está cadastrado"));
+                                .contains("Cliente com email " + updateRequest.email() + " já está cadastrado"));
                 verify(clientRepository, times(1)).findById(clientId);
                 verify(clientRepository, never()).save(any(Client.class));
         }
