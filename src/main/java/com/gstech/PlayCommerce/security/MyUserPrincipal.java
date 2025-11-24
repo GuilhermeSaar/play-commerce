@@ -18,6 +18,10 @@ public class MyUserPrincipal implements UserDetails {
         this.user = user;
     }
 
+    public Client getUser() {
+        return user;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

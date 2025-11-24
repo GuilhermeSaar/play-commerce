@@ -100,7 +100,6 @@ class BuyServiceTest {
 
     @Test
     void shouldCreateBuyWithMultipleGames_WhenAllGamesAreAvailable() {
-
         Long clientId = 1L;
         List<Long> gameIds = Arrays.asList(1L, 2L);
         PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.CARTAO_CREDITO,
@@ -186,5 +185,42 @@ class BuyServiceTest {
         verify(clientRepository, times(1)).findById(clientId);
         verify(gameRepository, times(1)).findById(gameId);
         verify(buyRepository, never()).save(any(Buy.class));
+    }
+
+    @Test
+    void shouldReturnBuysByClient_WhenClientHasBuys() {
+        Long clientId = 1L;
+        when(buyRepository.findByClientId(clientId)).thenReturn(List.of(buy));
+
+        List<BuyResponseDTO> buys = buyService.getBuysByClient(clientId);
+
+        assertNotNull(buys);
+        assertEquals(1, buys.size());
+        verify(buyRepository, times(1)).findByClientId(clientId);
+    }
+
+    @Test
+    void shouldReturnBuyById_WhenBuyExists() {
+        Long buyId = 1L;
+        when(buyRepository.findById(buyId)).thenReturn(Optional.of(buy));
+
+        BuyResponseDTO response = buyService.getBuyById(buyId);
+
+        assertNotNull(response);
+        assertEquals(buyId, response.id());
+        verify(buyRepository, times(1)).findById(buyId);
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundException_WhenBuyNotFound() {
+        Long buyId = 999L;
+        when(buyRepository.findById(buyId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> buyService.getBuyById(buyId));
+
+        assertTrue(exception.getMessage().contains("Compra com id " + buyId + " não encontrada"));
+        verify(buyRepository, times(1)).findById(buyId);
     }
 }
