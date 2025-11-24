@@ -94,6 +94,8 @@ class BuyServiceTest {
         verify(clientRepository, times(1)).findById(clientId);
         verify(gameRepository, times(1)).findById(gameId);
         verify(buyRepository, times(1)).save(any(Buy.class));
+        verify(clientRepository, times(1)).save(client);
+        assertTrue(client.getGames().contains(game1));
     }
 
     @Test
@@ -117,6 +119,9 @@ class BuyServiceTest {
         verify(gameRepository, times(1)).findById(1L);
         verify(gameRepository, times(1)).findById(2L);
         verify(buyRepository, times(1)).save(any(Buy.class));
+        verify(clientRepository, times(1)).save(client);
+        assertTrue(client.getGames().contains(game1));
+        assertTrue(client.getGames().contains(game2));
     }
 
     @Test
