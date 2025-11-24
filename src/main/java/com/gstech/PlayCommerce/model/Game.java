@@ -33,7 +33,6 @@ public class Game {
     private LocalDate releaseDate;
     private BigDecimal price;
     private String classification;
-    private String linkDownload;
     private boolean available = true;
 
     public Game(GameRequestDTO request, Category category) {
@@ -44,7 +43,6 @@ public class Game {
         this.releaseDate = request.releaseDate();
         this.price = request.price();
         this.classification = request.classification();
-        this.linkDownload = request.linkDownload();
         this.available = request.available() != null ? request.available() : true;
         this.category = category;
     }

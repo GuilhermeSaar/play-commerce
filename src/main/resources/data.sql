@@ -10,7 +10,7 @@ VALUES
     (3, 'Aventura');
 
 INSERT INTO tb_game
-(name, description, developer, publisher, release_date, price, classification, link_download, category_id, available)
+(name, description, developer, publisher, release_date, price, classification, category_id, available)
 VALUES
     ('Shadow of Eternia',
      'RPG de mundo aberto onde o jogador enfrenta criaturas das trevas para restaurar o equilíbrio do reino.',
@@ -19,7 +19,6 @@ VALUES
      '2023-05-14',
      199.90,
      '12+',
-     'https://download.com/shadow-eternia',
      2,
      true),
 
@@ -30,7 +29,6 @@ VALUES
      '2022-11-02',
      149.50,
      '16+',
-     'https://download.com/cyberstrike-protocol',
      1,
      true),
 
@@ -41,7 +39,6 @@ VALUES
      '2021-09-30',
      89.99,
      '10+',
-     'https://download.com/mystic-tales',
      3,
      true),
 
@@ -52,7 +49,6 @@ VALUES
      '2024-02-18',
      129.00,
      '18+',
-     'https://download.com/metal-fangs',
      1,
      true),
 
@@ -63,6 +59,5 @@ VALUES
      '2023-12-07',
      249.99,
      'Livre',
-     'https://download.com/galactic-frontier-ex',
      2,
      true);

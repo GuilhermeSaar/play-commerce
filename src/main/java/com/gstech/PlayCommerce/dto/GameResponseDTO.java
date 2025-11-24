@@ -14,7 +14,6 @@ public record GameResponseDTO(
         LocalDate releaseDate,
         BigDecimal price,
         String classification,
-        String linkDownload,
         Long categoryId
 ) {
     public GameResponseDTO(Game game) {
@@ -27,7 +26,6 @@ public record GameResponseDTO(
                 game.getReleaseDate(),
                 game.getPrice(),
                 game.getClassification(),
-                game.getLinkDownload(),
                 game.getCategory().getId()
         );
     }

@@ -286,40 +286,4 @@ class ClientServiceTest {
                 verify(clientRepository, times(1)).findById(clientId);
         }
 
-        @Test
-        void shouldReturnDownloadLink_WhenClientOwnsGame() {
-                Long clientId = 1L;
-                Long gameId = 1L;
-                String downloadLink = "http://download.com/game1";
-
-                Game game = new Game();
-                game.setId(gameId);
-                game.setLinkDownload(downloadLink);
-
-                client.setGames(Set.of(game));
-
-                when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-
-                String link = clientService.getDownloadLink(clientId, gameId);
-
-                assertEquals(downloadLink, link);
-                verify(clientRepository, times(1)).findById(clientId);
-        }
-
-        @Test
-        void shouldThrowResourceNotFoundException_WhenGameNotInLibrary() {
-                Long clientId = 1L;
-                Long gameId = 1L;
-
-                client.setGames(Set.of()); // Empty library
-
-                when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-
-                ResourceNotFoundException exception = assertThrows(
-                                ResourceNotFoundException.class,
-                                () -> clientService.getDownloadLink(clientId, gameId));
-
-                assertTrue(exception.getMessage().contains("Jogo não encontrado na biblioteca do cliente"));
-                verify(clientRepository, times(1)).findById(clientId);
-        }
 }

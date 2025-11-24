@@ -43,7 +43,7 @@ class LibraryControllerTest {
         Long clientId = 1L;
         GameResponseDTO gameDTO = new GameResponseDTO(
                 1L, "Game 1", "Description", "Dev", "Pub",
-                LocalDate.now(), BigDecimal.TEN, "18+", "http://download.com", 1L);
+                LocalDate.now(), BigDecimal.TEN, "18+", 1L);
 
         when(clientService.getLibrary(clientId)).thenReturn(List.of(gameDTO));
 
@@ -51,52 +51,5 @@ class LibraryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Game 1"));
-    }
-
-    @Test
-    void shouldReturnDownloadLink_WhenClientOwnsGame() throws Exception {
-        Long clientId = 1L;
-        Long gameId = 1L;
-        String downloadLink = "http://download.com/game1";
-
-        when(clientService.getDownloadLink(clientId, gameId)).thenReturn(downloadLink);
-
-        mockMvc.perform(get("/library/{clientId}/download/{gameId}", clientId, gameId)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.linkDownload").value(downloadLink));
-    }
-
-    @Test
-    void shouldReturnNotFound_WhenGameNotInLibrary() throws Exception {
-        Long clientId = 1L;
-        Long gameId = 1L;
-
-        when(clientService.getDownloadLink(clientId, gameId))
-                .thenThrow(new ResourceNotFoundException("Jogo não encontrado na biblioteca do cliente"));
-
-        // Note: standaloneSetup might not handle exceptions with @ControllerAdvice
-        // automatically unless configured.
-        // However, for unit test of controller logic, we verify it calls service.
-        // If we want to verify 404 mapping, we need to ensure exception handler is
-        // registered or check if exception bubbles up.
-        // For simplicity, let's just verify it throws or returns 404 if we had advice
-        // setup.
-        // Since we are mocking, we can just expect the exception to be thrown by the
-        // controller method if not handled.
-        // But usually we want to see the HTTP status.
-        // Let's assume GlobalExceptionHandler is working or we just verify the call.
-        // Actually, standaloneSetup allows setControllerAdvice.
-
-        // Let's just verify the service call throws, and if the controller doesn't
-        // catch it, it bubbles up.
-        // In a real integration test we'd check 404. Here with standalone, it might
-        // result in NestedServletException.
-
-        try {
-            mockMvc.perform(get("/library/{clientId}/download/{gameId}", clientId, gameId));
-        } catch (Exception e) {
-            // Expected
-        }
     }
 }

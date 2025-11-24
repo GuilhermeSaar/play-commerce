@@ -51,7 +51,6 @@ class GameServiceTest {
                 LocalDate.of(2024, 1, 15),
                 new BigDecimal("59.99"),
                 "18+",
-                "https://download.link/game",
                 true,
                 1L);
 
@@ -64,7 +63,6 @@ class GameServiceTest {
         game.setReleaseDate(LocalDate.of(2024, 1, 15));
         game.setPrice(new BigDecimal("59.99"));
         game.setClassification("18+");
-        game.setLinkDownload("https://download.link/game");
         game.setAvailable(true);
         game.setCategory(category);
     }
@@ -75,9 +73,7 @@ class GameServiceTest {
         when(categoryRepository.findById(validRequest.categoryId())).thenReturn(Optional.of(category));
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
-
         GameResponseDTO response = gameService.createGame(validRequest);
-
 
         assertNotNull(response);
         verify(categoryRepository, times(1)).findById(validRequest.categoryId());
@@ -96,12 +92,10 @@ class GameServiceTest {
                 LocalDate.of(2024, 1, 15),
                 new BigDecimal("59.99"),
                 "18+",
-                "https://download.link/game",
                 true,
                 invalidCategoryId);
 
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
-
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -125,15 +119,12 @@ class GameServiceTest {
                 new BigDecimal("49.99"),
                 null,
                 null,
-                null,
                 null);
 
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
-
         GameResponseDTO response = gameService.updateGame(updateRequest, gameId);
-
 
         assertNotNull(response);
         verify(gameRepository, times(1)).findById(gameId);
@@ -159,16 +150,13 @@ class GameServiceTest {
                 null,
                 null,
                 null,
-                null,
                 newCategoryId);
 
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
         when(categoryRepository.findById(newCategoryId)).thenReturn(Optional.of(newCategory));
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
-
         GameResponseDTO response = gameService.updateGame(updateRequest, gameId);
-
 
         assertNotNull(response);
         verify(gameRepository, times(1)).findById(gameId);
@@ -181,7 +169,6 @@ class GameServiceTest {
 
         Long invalidGameId = 999L;
         when(gameRepository.findById(invalidGameId)).thenReturn(Optional.empty());
-
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -206,12 +193,10 @@ class GameServiceTest {
                 null,
                 null,
                 null,
-                null,
                 invalidCategoryId);
 
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
-
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -230,9 +215,7 @@ class GameServiceTest {
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
         doNothing().when(gameRepository).delete(game);
 
-
         gameService.deleteGame(gameId);
-
 
         verify(gameRepository, times(1)).findById(gameId);
         verify(gameRepository, times(1)).delete(game);
@@ -244,7 +227,6 @@ class GameServiceTest {
         Long invalidGameId = 999L;
         when(gameRepository.findById(invalidGameId)).thenReturn(Optional.empty());
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> gameService.deleteGame(invalidGameId));
@@ -252,5 +234,51 @@ class GameServiceTest {
         assertEquals("Jogo não encontrado", exception.getMessage());
         verify(gameRepository, times(1)).findById(invalidGameId);
         verify(gameRepository, never()).delete(any(Game.class));
+    }
+
+    @Test
+    void shouldReturnAllGames_WhenGamesExist() {
+        // Given
+        java.util.List<Game> games = java.util.List.of(game);
+        when(gameRepository.findAll()).thenReturn(games);
+
+        // When
+        java.util.List<GameResponseDTO> response = gameService.findAllGames();
+
+        // Then
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(game.getName(), response.get(0).name());
+        verify(gameRepository, times(1)).findAll();
+    }
+
+    @Test
+    void shouldReturnGame_WhenGameExists() {
+        // Given
+        Long gameId = 1L;
+        when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
+
+        // When
+        GameResponseDTO response = gameService.findGameById(gameId);
+
+        // Then
+        assertNotNull(response);
+        assertEquals(game.getName(), response.name());
+        verify(gameRepository, times(1)).findById(gameId);
+    }
+
+    @Test
+    void shouldThrowException_WhenGameNotFoundById() {
+        // Given
+        Long invalidGameId = 999L;
+        when(gameRepository.findById(invalidGameId)).thenReturn(Optional.empty());
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gameService.findGameById(invalidGameId));
+
+        assertEquals("Jogo não encontrado", exception.getMessage());
+        verify(gameRepository, times(1)).findById(invalidGameId);
     }
 }

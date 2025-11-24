@@ -97,16 +97,4 @@ public class ClientService {
                 .map(GameResponseDTO::new)
                 .collect(Collectors.toList());
     }
-
-    @Transactional(readOnly = true)
-    public String getDownloadLink(Long clientId, Long gameId) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente com id " + clientId + " não encontrado"));
-
-        return client.getGames().stream()
-                .filter(game -> game.getId().equals(gameId))
-                .findFirst()
-                .map(game -> game.getLinkDownload())
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado na biblioteca do cliente"));
-    }
 }

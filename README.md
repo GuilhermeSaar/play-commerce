@@ -32,8 +32,8 @@ As transações de compra poderão conter múltiplos jogos e estarão vinculadas
 
 ## 📋 Requisitos Funcionais
 
-| Código | Descrição | Status |
-|--------|------------|--------|
+| Código   | Descrição | Status |
+|----------|------------|--------|
 | **RF01** | O sistema deve permitir o cadastro de clientes | ✅ Concluído |
 | **RF02** | O sistema deve permitir a atualização dos dados cadastrais do cliente | ✅ Concluído |
 | **RF03** | O sistema deve permitir a autenticação de clientes (login) para acesso à conta | ✅ Concluído |
@@ -47,11 +47,10 @@ As transações de compra poderão conter múltiplos jogos e estarão vinculadas
 | **RF11** | O sistema deve vincular o pagamento à compra e ao cliente correspondente | ✅ Concluído |
 | **RF12** | O sistema deve garantir que todas as compras e pagamentos estejam devidamente registrados | ✅ Concluído |
 | **RF13** | O sistema deve manter uma biblioteca de jogos vinculada a cada cliente, contendo todos os jogos adquiridos | ✅ Concluído |
-| **RF14** | O sistema deve permitir que o cliente baixe qualquer jogo da sua biblioteca quantas vezes quiser | ✅ Concluído |
-| **RF15** | O sistema deve permitir que um jogo esteja presente na biblioteca de vários clientes | ✅ Concluído |✅ Concluído
-| **RF16** | O sistema deve permitir consultar o histórico de compras de um cliente | ✅ Concluído |
-| **RF17** | O sistema deve permitir visualizar os detalhes de cada compra, incluindo jogos e status | ✅ Concluído |
-| **RF18** | O sistema deve permitir consultar a biblioteca de jogos de um cliente autenticado | ✅ Concluído |
+| **RF14** | O sistema deve permitir que um jogo esteja presente na biblioteca de vários clientes | ✅ Concluído |✅ Concluído
+| **RF15** | O sistema deve permitir consultar o histórico de compras de um cliente | ✅ Concluído |
+| **RF16** | O sistema deve permitir visualizar os detalhes de cada compra, incluindo jogos e status | ✅ Concluído |
+| **RF17** | O sistema deve permitir consultar a biblioteca de jogos de um cliente autenticado | ✅ Concluído |
 
 
 ---
