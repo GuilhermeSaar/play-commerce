@@ -1,14 +1,17 @@
 package com.gstech.PlayCommerce.controller;
 
 import com.gstech.PlayCommerce.dto.GameResponseDTO;
-import com.gstech.PlayCommerce.service.ClientService;
 import com.gstech.PlayCommerce.security.MyUserPrincipal;
+
+import com.gstech.PlayCommerce.service.ClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/library")
@@ -26,11 +29,6 @@ public class LibraryController {
         return ResponseEntity.ok(library);
     }
 
-    @GetMapping("/{clientId}/download/{gameId}")
-    public ResponseEntity<Map<String, String>> downloadGame(@PathVariable Long clientId, @PathVariable Long gameId) {
-        String link = clientService.getDownloadLink(clientId, gameId);
-        return ResponseEntity.ok(Map.of("linkDownload", link));
-    }
 
     @GetMapping("/my-library")
     public ResponseEntity<List<GameResponseDTO>> getMyLibrary(@AuthenticationPrincipal MyUserPrincipal userPrincipal) {

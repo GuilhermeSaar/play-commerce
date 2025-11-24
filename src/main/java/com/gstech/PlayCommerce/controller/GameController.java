@@ -26,8 +26,7 @@ public class GameController {
     @PutMapping("/{id}")
     public ResponseEntity<GameResponseDTO> updateGame(
             @Valid @RequestBody GameRequestDTO request,
-            @PathVariable Long id
-    ) {
+            @PathVariable Long id) {
         var updatedGame = gameService.updateGame(request, id);
         return ResponseEntity.ok(updatedGame);
     }
@@ -36,5 +35,17 @@ public class GameController {
     public ResponseEntity<Void> deleteGame(@PathVariable Long id) {
         gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<java.util.List<GameResponseDTO>> findAllGames() {
+        var games = gameService.findAllGames();
+        return ResponseEntity.ok(games);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GameResponseDTO> findGameById(@PathVariable Long id) {
+        var game = gameService.findGameById(id);
+        return ResponseEntity.ok(game);
     }
 }
