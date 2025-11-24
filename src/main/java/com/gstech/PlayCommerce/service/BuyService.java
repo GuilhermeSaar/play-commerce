@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BuyService {
@@ -75,5 +76,19 @@ public class BuyService {
         savedBuy.setPayment(payment);
 
         return new BuyResponseDTO(savedBuy);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BuyResponseDTO> getBuysByClient(Long clientId) {
+        return buyRepository.findByClientId(clientId).stream()
+                .map(BuyResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public BuyResponseDTO getBuyById(Long id) {
+        Buy buy = buyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Compra com id " + id + " não encontrada"));
+        return new BuyResponseDTO(buy);
     }
 }
