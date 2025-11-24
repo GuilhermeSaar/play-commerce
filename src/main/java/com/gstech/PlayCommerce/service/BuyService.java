@@ -66,6 +66,10 @@ public class BuyService {
         buy.setBuyGames(buyGames);
         Buy savedBuy = buyRepository.save(buy);
 
+        for (BuyGame bg : buyGames) {
+            client.getGames().add(bg.getGame());
+        }
+        clientRepository.save(client);
 
         Payment payment = paymentService.createPayment(savedBuy, client, request.payment());
         savedBuy.setPayment(payment);

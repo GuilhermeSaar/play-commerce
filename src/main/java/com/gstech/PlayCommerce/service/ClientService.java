@@ -2,6 +2,7 @@ package com.gstech.PlayCommerce.service;
 
 import com.gstech.PlayCommerce.dto.ClientRequestDTO;
 import com.gstech.PlayCommerce.dto.ClientResponseDTO;
+import com.gstech.PlayCommerce.dto.GameResponseDTO;
 import com.gstech.PlayCommerce.exception.DuplicateResourceException;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
 import com.gstech.PlayCommerce.model.Client;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -21,7 +25,6 @@ public class ClientService {
     private ClientRepository clientRepository;
     @Autowired
     private PasswordEncoder encoder;
-
 
     @Transactional
     public ClientResponseDTO createClient(ClientRequestDTO request) {
@@ -33,14 +36,14 @@ public class ClientService {
 
         clientRepository.findByEmail(request.email())
                 .ifPresent(client -> {
-                    throw new DuplicateResourceException("Cliente com email " + request.email() + " já está cadastrado");
+                    throw new DuplicateResourceException(
+                            "Cliente com email " + request.email() + " já está cadastrado");
                 });
 
         String passwordEncrypted = encoder.encode(request.password());
 
         var client = new Client(
-                request, passwordEncrypted
-        );
+                request, passwordEncrypted);
 
         return new ClientResponseDTO(clientRepository.save(client));
     }
@@ -58,17 +61,17 @@ public class ClientService {
         Optional.ofNullable(request.name()).ifPresent(client::setName);
         Optional.ofNullable(request.phone()).ifPresent(client::setPhone);
 
-        // verifica se existe um email cadastrado de outro cliente
+
         Optional.ofNullable(request.email()).ifPresent(newEmail -> {
             clientRepository.findByEmail(newEmail)
                     .ifPresent(existingClient -> {
                         if (!existingClient.getId().equals(id)) {
-                            throw new DuplicateResourceException("Cliente com email " + newEmail + " já está cadastrado");
+                            throw new DuplicateResourceException(
+                                    "Cliente com email " + newEmail + " já está cadastrado");
                         }
                     });
         });
 
-        // verifica se existe um cpf cadastrado de outro cliente
         Optional.ofNullable(request.cpf()).ifPresent(newCpf -> {
             clientRepository.findByCpf(newCpf)
                     .ifPresent(existingClient -> {
@@ -79,5 +82,26 @@ public class ClientService {
         });
         return new ClientResponseDTO(clientRepository.save(client));
     }
-}
 
+    @Transactional(readOnly = true)
+    public List<GameResponseDTO> getLibrary(Long clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com id " + clientId + " não encontrado"));
+
+        return client.getGames().stream()
+                .map(GameResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public String getDownloadLink(Long clientId, Long gameId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com id " + clientId + " não encontrado"));
+
+        return client.getGames().stream()
+                .filter(game -> game.getId().equals(gameId))
+                .findFirst()
+                .map(game -> game.getLinkDownload())
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado na biblioteca do cliente"));
+    }
+}
