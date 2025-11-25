@@ -1,13 +1,13 @@
 # 🎮 Plataforma de Venda e Gerenciamento de Jogos Digitais
 
-> **Status do Projeto:** 🚧 *Em desenvolvimento (atualmente no RF05)*
+> **Status do Projeto:** 🚧 *Quase concluído — pendente apenas Docker + PostgreSQL*
 
 ---
 
 ## 🧾 Descrição Geral
 
 O sistema proposto é uma plataforma de **venda e gerenciamento de jogos digitais**, desenvolvida em **Java com Spring Boot**.  
-O objetivo é oferecer aos clientes uma experiência completa de **compra, download e gerenciamento** de seus jogos adquiridos.
+
 
 A aplicação permitirá:
 - Cadastro e autenticação de clientes;
@@ -24,7 +24,6 @@ O sistema também gerenciará informações detalhadas sobre cada jogo, incluind
 - Preço
 - Categoria
 - Classificação indicativa
-- Link de download
 
 As transações de compra poderão conter múltiplos jogos e estarão vinculadas a um único pagamento.
 
@@ -60,10 +59,10 @@ As transações de compra poderão conter múltiplos jogos e estarão vinculadas
 - ☕ **Java 17**
 - 🌱 **Spring Boot 3**
 - 🧩 **Spring Data JPA**
-- 🧾 **PostgreSQL**
+- 🧾 **PostgreSQL(Ainda não implementado)**
 - 🔐 **Spring Security + JWT**
 - 🧰 **Maven**
-- 🧪 **JUnit / Mockito** *(planejado)*
+- 🧪 **JUnit / Mockito**
 
 ---
 
