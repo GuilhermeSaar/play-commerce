@@ -1,5 +1,6 @@
 package com.gstech.PlayCommerce.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,18 +16,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<Map<String, String>> handleDuplicateResource(DuplicateResourceException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("message", ex.getMessage());
-        error.put("status", String.valueOf(HttpStatus.CONFLICT.value()));
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        return error(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFound(ResourceNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("message", ex.getMessage());
-        error.put("status", String.valueOf(HttpStatus.NOT_FOUND.value()));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return error(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidArgument(IllegalArgumentException ex) {
+        return error(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return error(HttpStatus.CONFLICT, "Violação de integridade dos dados");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -49,10 +54,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("message", "Erro interno do servidor");
-        error.put("status", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor");
+    }
+
+    private ResponseEntity<Map<String, String>> error(HttpStatus status, String message) {
+        Map<String, String> error = Map.of(
+                "message", message,
+                "status", String.valueOf(status.value()));
+        return ResponseEntity.status(status).body(error);
     }
 }
 

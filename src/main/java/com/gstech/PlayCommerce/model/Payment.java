@@ -3,7 +3,6 @@ package com.gstech.PlayCommerce.model;
 import com.gstech.PlayCommerce.model.enums.PayStatus;
 import com.gstech.PlayCommerce.model.enums.PaymentType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tb_pagamento")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class Payment {
@@ -26,26 +24,19 @@ public class Payment {
     @JoinColumn(name = "id_compra", nullable = false)
     private Buy buy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_forma_pagamento", nullable = false)
-    private PaymentMethod paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma_pagamento", nullable = false)
+    private PaymentType paymentMethod;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status_pagamento")
-    private PaymentStatus paymentStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_pagamento", nullable = false)
+    private PayStatus paymentStatus;
 
     @Column(nullable = false)
     private LocalDateTime paymentDate = LocalDateTime.now();
 
-    public Payment(PaymentStatus statusPayment, PaymentMethod paymentMethod) {
-        this.paymentStatus = statusPayment;
+    public Payment(PaymentType paymentMethod, PayStatus paymentStatus) {
         this.paymentMethod = paymentMethod;
-    }
-
-    public Payment(PaymentMethod method, PaymentStatus status) {
-
-        this.paymentMethod = method;
-        this.paymentStatus = status;
-
+        this.paymentStatus = paymentStatus;
     }
 }

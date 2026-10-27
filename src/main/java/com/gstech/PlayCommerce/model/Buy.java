@@ -2,7 +2,6 @@ package com.gstech.PlayCommerce.model;
 
 import com.gstech.PlayCommerce.model.enums.BuyStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "tb_compra")
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

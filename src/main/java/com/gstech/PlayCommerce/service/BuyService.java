@@ -11,8 +11,6 @@ import com.gstech.PlayCommerce.model.Payment;
 import com.gstech.PlayCommerce.repository.BuyRepository;
 import com.gstech.PlayCommerce.repository.ClientRepository;
 import com.gstech.PlayCommerce.repository.GameRepository;
-import com.gstech.PlayCommerce.repository.PaymentMethodRepository;
-import com.gstech.PlayCommerce.repository.PaymentStatusRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +27,6 @@ public class BuyService {
     private final BuyRepository buyRepository;
     private final ClientRepository clientRepository;
     private final GameRepository gameRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
-    private final PaymentStatusRepository paymentStatusRepository;
 
     @Transactional
     public BuyResponseDTO createBuy(BuyRequest request) {
@@ -39,14 +35,6 @@ public class BuyService {
         var client = clientRepository.findById(request.clientId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Cliente com id " + request.clientId() + " não encontrado"));
-
-        var paymentMethod = paymentMethodRepository.findByPaymentType(request.payment().paymentMethod())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Forma de pagamento " + request.payment().paymentMethod() + " não encontrada"));
-
-        var paymentStatus = paymentStatusRepository.findByPayStatus(request.payment().paymentStatus())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Status de pagamento " + request.payment().paymentStatus() + " não encontrado"));
 
         List<BuyGame> buyGames = new ArrayList<>();
         Set<Long> gameIds = new HashSet<>();
@@ -63,19 +51,27 @@ public class BuyService {
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Jogo com id " + item.gameId() + " não encontrado"));
 
-            if (game.getPrice() == null || game.getPrice().compareTo(item.price()) != 0) {
-                throw new IllegalArgumentException("O preço informado para o jogo com id " + item.gameId()
-                        + " não corresponde ao preço atual");
-            }
-
             buyGames.add(new BuyGame(item, game));
         }
 
-        Payment payment = new Payment(paymentMethod, paymentStatus);
+        Payment payment = new Payment(request.payment().paymentMethod(), request.payment().paymentStatus());
         Buy buy = new Buy(client, request.status(), buyGames, payment);
-        client.getBuyList().add(buy);
 
         return new BuyResponseDTO(buyRepository.save(buy));
+    }
+
+    @Transactional(readOnly = true)
+    public List<BuyResponseDTO> getBuysByClient(Long clientId) {
+        return buyRepository.findByClientId(clientId).stream()
+                .map(BuyResponseDTO::new)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public BuyResponseDTO getBuyById(Long id) {
+        Buy buy = buyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Compra com id " + id + " não encontrada"));
+        return new BuyResponseDTO(buy);
     }
 
     private void validateRequest(BuyRequest request) {
@@ -106,11 +102,9 @@ public class BuyService {
         if (item == null
                 || item.gameId() == null
                 || item.quantity() == null
-                || item.quantity() <= 0
-                || item.price() == null
-                || item.price().signum() < 0) {
+                || item.quantity() <= 0) {
             throw new IllegalArgumentException(
-                    "Cada item deve informar jogo, quantidade positiva e preço não negativo");
+                    "Cada item deve informar jogo e quantidade positiva");
         }
     }
 

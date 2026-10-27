@@ -1,41 +1,92 @@
 # PlayCommerce
 
-Projeto desenvolvido para fins de prática e estudo de modelagem de dados. A proposta é traduzir o diagrama relacional elaborado na faculdade para entidades Java e mapeamentos com JPA.
+Projeto acadêmico desenvolvido para praticar modelagem de dados relacionais e sua implementação em Java com Spring Boot e JPA. O ponto de partida foi um DER elaborado durante a faculdade; a aplicação existe como exercício de persistência, regras de compra e organização de uma API REST.
 
-## Objetivo e escopo
+> Este não é um produto comercial e não distribui jogos, licenças ou conteúdo protegido. Os dados cadastrados são fictícios e servem apenas para demonstrar o modelo.
 
-O foco está nas tabelas, chaves e associações do diagrama, não na implementação de uma plataforma comercial completa. As entidades representam clientes, compras, itens de compra, jogos, categorias, pagamentos, formas e status de pagamento, além da biblioteca de jogos do cliente.
+## Objetivo de aprendizado
 
-O modelo permite praticar relações um-para-muitos, um-para-um e muitos-para-muitos. `Compra_Jogo` também representa uma associação com atributos próprios, como quantidade e preço.
+- Traduzir um modelo relacional em entidades JPA.
+- Trabalhar relações `1:N`, `1:1` e uma chave composta.
+- Criar um fluxo transacional de compra com itens e pagamento.
+- Organizar uma API REST pequena, com DTOs, validações, exceções e testes unitários.
 
-Os endpoints e serviços existentes servem como apoio para exercitar a persistência e a consulta dessas estruturas. Eles não implementam regras completas de negócio nem integração real com pagamentos. `link_download` é um atributo do jogo; não há serviço de download. A autenticação JWT presente no código é experimental e não é o objetivo central do projeto.
+## Modelo de dados
 
-## Diagrama
+![Diagrama entidade-relacionamento do PlayCommerce](docs/diagram.svg)
 
-![Diagrama de modelagem](docs/modelagem.jpg)
+O diagrama também está disponível em [SVG](docs/diagram.svg).
+
+O modelo foi reduzido intencionalmente às entidades principais:
+
+| Entidade | Responsabilidade |
+|---|---|
+| `Client` | Representa quem realiza uma compra. |
+| `Category` e `Game` | Formam o catálogo de jogos. |
+| `Buy` | Agrupa cliente, itens, status e pagamento. |
+| `BuyGame` | Registra jogo, quantidade e preço na compra; usa chave composta. |
+| `Payment` | Registra método e status do pagamento; compartilha a chave da compra com `@MapsId`. |
 
 ## Tecnologias
 
 - Java 17
-- Spring Boot e Spring Data JPA
+- Spring Boot 3
+- Spring Data JPA / Hibernate
 - H2 para execução local e testes
-- Driver PostgreSQL
-- Spring Security e JWT (experimento adicional)
 - Maven
-- JUnit e Mockito
+- JUnit 5 e Mockito
 
-## Executar
+## Como executar
 
-Requer Java 17. Para iniciar a aplicação:
+Pré-requisito: Java 17.
 
 ```bash
-bash mvnw spring-boot:run
+bash ./mvnw spring-boot:run
 ```
 
-A configuração atual usa H2 em memória e carrega dados de exemplo de `src/main/resources/data.sql`.
+A aplicação usa H2 em memória e carrega categorias, jogos e um cliente fictício a partir de `src/main/resources/data.sql`.
+
+## Endpoints principais
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/api/clients` | Cadastra um cliente. |
+| `POST` | `/api/games` | Cadastra um jogo em uma categoria existente. |
+| `GET` | `/api/games` | Lista o catálogo. |
+| `GET` | `/api/games/{id}` | Busca um jogo. |
+| `POST` | `/api/buy` | Cria uma compra com itens e pagamento. |
+| `GET` | `/api/buy/{id}` | Busca uma compra. |
+| `GET` | `/api/buy/history/{clientId}` | Lista as compras de um cliente. |
+
+### Exemplo de compra
+
+```json
+{
+  "clientId": 1,
+  "status": "PENDING",
+  "items": [
+    {
+      "gameId": 1,
+      "quantity": 1
+    }
+  ],
+  "payment": {
+    "paymentMethod": "PIX",
+    "paymentStatus": "PENDENTE"
+  }
+}
+```
+
+O serviço valida a existência do cliente e dos jogos, impede itens duplicados na mesma compra e registra o preço atual do catálogo em cada item.
 
 ## Testes
 
 ```bash
-bash mvnw test
+mvn test
 ```
+
+Os testes cobrem o fluxo de compra, o catálogo, o cadastro de clientes, o controller de compras e a inicialização do contexto Spring.
+
+## Escopo intencionalmente limitado
+
+O projeto não implementa autenticação, integração com gateway de pagamento, distribuição de arquivos, licenciamento, carrinho ou estoque. Essas ausências são deliberadas: o objetivo é manter um exemplo pequeno e organizado para estudo de modelagem relacional e JPA.

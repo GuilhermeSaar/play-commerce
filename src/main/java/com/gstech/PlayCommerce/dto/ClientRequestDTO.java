@@ -16,11 +16,7 @@ public record ClientRequestDTO(
         String email,
 
         @NotBlank(message = "Telefone é obrigatório")
-        String phone,
-
-        @NotBlank(message = "Senha é obrigatória")
-        @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
-        String password
+        String phone
 
 ) {}
 

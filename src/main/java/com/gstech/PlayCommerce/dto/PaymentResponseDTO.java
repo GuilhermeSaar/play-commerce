@@ -15,8 +15,8 @@ public record PaymentResponseDTO(
     public PaymentResponseDTO(Payment payment) {
         this(
                 payment.getId(),
-                payment.getPaymentMethod().getPaymentType().name(),
-                payment.getPaymentStatus().getPayStatus().name(),
+                payment.getPaymentMethod().name(),
+                payment.getPaymentStatus().name(),
                 payment.getPaymentDate(),
                 payment.getBuy().getId(),
                 payment.getBuy().getClient().getId());

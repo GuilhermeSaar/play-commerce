@@ -1,9 +1,7 @@
 package com.gstech.PlayCommerce.controller;
 
-import com.gstech.PlayCommerce.dto.BuyRequest;
 import com.gstech.PlayCommerce.dto.BuyResponseDTO;
-import com.gstech.PlayCommerce.model.enums.PayStatus;
-import com.gstech.PlayCommerce.model.enums.PaymentType;
+import com.gstech.PlayCommerce.exception.GlobalExceptionHandler;
 import com.gstech.PlayCommerce.service.BuyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,23 +38,46 @@ class BuyControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(buyController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(buyController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     @Test
     void shouldCreateBuy_WhenRequestIsValid() throws Exception {
-        BuyRequest request = new BuyRequest(1L, List.of(1L),
-                new PaymentRequest(PaymentType.PIX, PayStatus.APROVADO));
         BuyResponseDTO response = new BuyResponseDTO(1L, 1L, List.of(), BigDecimal.TEN, LocalDateTime.now(), null);
 
-        when(buyService.createBuy(any(BuyRequest.class))).thenReturn(response);
+        when(buyService.createBuy(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/buy")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                        "{\"clientId\": 1, \"gameIds\": [1], \"payment\": {\"type\": \"PIX\", \"status\": \"APROVADO\"}}"))
+                        "{\"clientId\":1,\"status\":\"PENDING\",\"items\":[{\"gameId\":1,\"quantity\":1}],\"payment\":{\"paymentMethod\":\"PIX\",\"paymentStatus\":\"PENDENTE\"}}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void shouldReturnBadRequest_WhenRequestIsInvalid() throws Exception {
+        mockMvc.perform(post("/api/buy")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.clientId").value("Cliente é obrigatório"));
+
+        verifyNoInteractions(buyService);
+    }
+
+    @Test
+    void shouldReturnBadRequest_WhenServiceRejectsBusinessRule() throws Exception {
+        when(buyService.createBuy(any())).thenThrow(new IllegalArgumentException("Compra inválida"));
+
+        mockMvc.perform(post("/api/buy")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        "{\"clientId\":1,\"status\":\"PENDING\",\"items\":[{\"gameId\":1,\"quantity\":1}],\"payment\":{\"paymentMethod\":\"PIX\",\"paymentStatus\":\"PENDENTE\"}}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Compra inválida"));
     }
 
     @Test

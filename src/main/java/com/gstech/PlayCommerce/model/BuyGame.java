@@ -2,7 +2,6 @@ package com.gstech.PlayCommerce.model;
 
 import com.gstech.PlayCommerce.dto.BuyGameDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "compra_jogo")
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -39,6 +37,6 @@ public class BuyGame {
     public BuyGame(BuyGameDTO request, Game game) {
         this.game = game;
         this.quantity = request.quantity();
-        this.price = request.price();
+        this.price = game.getPrice();
     }
 }

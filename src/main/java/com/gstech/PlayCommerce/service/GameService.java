@@ -9,7 +9,7 @@ import com.gstech.PlayCommerce.repository.GameRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class GameService {
@@ -35,41 +35,14 @@ public class GameService {
         return new GameResponseDTO(gameRepository.save(game));
     }
 
-    @Transactional
-    public GameResponseDTO updateGame(GameRequestDTO request, Long id) {
-
-        var game = gameRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado"));
-
-        Optional.ofNullable(request.name()).ifPresent(game::setName);
-        Optional.ofNullable(request.description()).ifPresent(game::setDescription);
-        Optional.ofNullable(request.developer()).ifPresent(game::setDeveloper);
-        Optional.ofNullable(request.publisher()).ifPresent(game::setPublisher);
-        Optional.ofNullable(request.releaseDate()).ifPresent(game::setReleaseDate);
-        Optional.ofNullable(request.price()).ifPresent(game::setPrice);
-        Optional.ofNullable(request.classification()).ifPresent(game::setClassification);
-
-        Optional.ofNullable(request.categoryId()).ifPresent(categoryId -> {
-            var category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
-            game.setCategory(category);
-        });
-
-        return new GameResponseDTO(gameRepository.save(game));
-    }
-
-    public void deleteGame(Long id) {
-        var game = gameRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado"));
-        gameRepository.delete(game);
-    }
-
-    public java.util.List<GameResponseDTO> findAllGames() {
+    @Transactional(readOnly = true)
+    public List<GameResponseDTO> findAllGames() {
         return gameRepository.findAll().stream()
                 .map(GameResponseDTO::new)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public GameResponseDTO findGameById(Long id) {
         var game = gameRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado"));

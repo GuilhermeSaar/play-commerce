@@ -13,7 +13,7 @@ public record GameResponseDTO(
         String publisher,
         LocalDate releaseDate,
         BigDecimal price,
-        String classification,
+        int classification,
         Long categoryId
 ) {
     public GameResponseDTO(Game game) {
