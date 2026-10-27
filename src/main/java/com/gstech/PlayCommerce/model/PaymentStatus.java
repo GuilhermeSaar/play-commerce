@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.model;
 
-import com.gstech.PlayCommerce.model.enums.PaymentStatusType;
+import com.gstech.PlayCommerce.model.enums.PayStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +23,8 @@ public class PaymentStatus {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name= "status_pagamento", nullable = false, unique = true)
-    private PaymentStatusType status;
+    @Column(name = "status_pagamento", nullable = false)
+    private PayStatus payStatus;
 
     @OneToMany(mappedBy = "paymentStatus", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();

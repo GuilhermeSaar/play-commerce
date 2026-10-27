@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.model.enums;
 
-public enum PaymentStatusType {
+public enum PayStatus {
 
     PENDENTE, APROVADO, RECUSADO, CANCELADO
 

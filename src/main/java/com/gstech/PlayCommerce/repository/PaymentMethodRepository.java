@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Long> {
+public interface PaymentMethodRepository extends JpaRepository<com.gstech.PlayCommerce.model.PaymentMethod, Long> {
 
     Optional<PaymentMethod> findByPaymentType(PaymentType paymentType);
 

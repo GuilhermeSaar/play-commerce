@@ -1,9 +1,8 @@
 package com.gstech.PlayCommerce.service;
 
-import com.gstech.PlayCommerce.dto.PaymentRequestDTO;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
 import com.gstech.PlayCommerce.model.*;
-import com.gstech.PlayCommerce.model.enums.PaymentStatusType;
+import com.gstech.PlayCommerce.model.enums.PayStatus;
 import com.gstech.PlayCommerce.model.enums.PaymentType;
 import com.gstech.PlayCommerce.repository.PaymentMethodRepository;
 import com.gstech.PlayCommerce.repository.PaymentRepository;
@@ -38,8 +37,8 @@ class PaymentServiceTest {
 
     private Buy buy;
     private Client client;
-    private PaymentMethod paymentMethod;
-    private PaymentStatus paymentStatus;
+    private com.gstech.PlayCommerce.model.PaymentMethod paymentMethod;
+    private com.gstech.PlayCommerce.model.PaymentStatus paymentStatus;
     private Payment payment;
 
     @BeforeEach
@@ -54,13 +53,13 @@ class PaymentServiceTest {
         buy.setId(1L);
         buy.setClient(client);
 
-        paymentMethod = new PaymentMethod();
+        paymentMethod = new com.gstech.PlayCommerce.model.PaymentMethod();
         paymentMethod.setId(1L);
         paymentMethod.setPaymentType(PaymentType.PIX);
 
-        paymentStatus = new PaymentStatus();
+        paymentStatus = new com.gstech.PlayCommerce.model.PaymentStatus();
         paymentStatus.setId(1L);
-        paymentStatus.setStatus(PaymentStatusType.APROVADO);
+        paymentStatus.setStatus(PayStatus.APROVADO);
 
         payment = new Payment();
         payment.setId(1L);
@@ -73,11 +72,11 @@ class PaymentServiceTest {
     @Test
     void shouldCreatePayment_WhenValidBuyAndClientProvided() {
         // GIVEN
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.APROVADO);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.PIX, PayStatus.APROVADO);
 
         when(paymentRepository.findByBuyId(buy.getId())).thenReturn(Optional.empty());
         when(paymentMethodRepository.findByPaymentType(PaymentType.PIX)).thenReturn(Optional.of(paymentMethod));
-        when(paymentStatusRepository.findByStatus(PaymentStatusType.APROVADO)).thenReturn(Optional.of(paymentStatus));
+        when(paymentStatusRepository.findByStatus(PayStatus.APROVADO)).thenReturn(Optional.of(paymentStatus));
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         // WHEN
@@ -88,29 +87,29 @@ class PaymentServiceTest {
         assertEquals(payment.getId(), result.getId());
         verify(paymentRepository, times(1)).findByBuyId(buy.getId());
         verify(paymentMethodRepository, times(1)).findByPaymentType(PaymentType.PIX);
-        verify(paymentStatusRepository, times(1)).findByStatus(PaymentStatusType.APROVADO);
+        verify(paymentStatusRepository, times(1)).findByStatus(PayStatus.APROVADO);
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void shouldCreatePaymentMethodAndStatus_WhenTheyDoNotExist() {
         // GIVEN
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.CARTAO_CREDITO,
-                PaymentStatusType.PENDENTE);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.CARTAO_CREDITO,
+                PayStatus.PENDENTE);
 
-        PaymentMethod newPaymentMethod = new PaymentMethod();
+        com.gstech.PlayCommerce.model.PaymentMethod newPaymentMethod = new com.gstech.PlayCommerce.model.PaymentMethod();
         newPaymentMethod.setId(2L);
         newPaymentMethod.setPaymentType(PaymentType.CARTAO_CREDITO);
 
-        PaymentStatus newPaymentStatus = new PaymentStatus();
+        com.gstech.PlayCommerce.model.PaymentStatus newPaymentStatus = new com.gstech.PlayCommerce.model.PaymentStatus();
         newPaymentStatus.setId(2L);
-        newPaymentStatus.setStatus(PaymentStatusType.PENDENTE);
+        newPaymentStatus.setStatus(PayStatus.PENDENTE);
 
         when(paymentRepository.findByBuyId(buy.getId())).thenReturn(Optional.empty());
         when(paymentMethodRepository.findByPaymentType(PaymentType.CARTAO_CREDITO)).thenReturn(Optional.empty());
-        when(paymentMethodRepository.save(any(PaymentMethod.class))).thenReturn(newPaymentMethod);
-        when(paymentStatusRepository.findByStatus(PaymentStatusType.PENDENTE)).thenReturn(Optional.empty());
-        when(paymentStatusRepository.save(any(PaymentStatus.class))).thenReturn(newPaymentStatus);
+        when(paymentMethodRepository.save(any(com.gstech.PlayCommerce.model.PaymentMethod.class))).thenReturn(newPaymentMethod);
+        when(paymentStatusRepository.findByStatus(PayStatus.PENDENTE)).thenReturn(Optional.empty());
+        when(paymentStatusRepository.save(any(com.gstech.PlayCommerce.model.PaymentStatus.class))).thenReturn(newPaymentStatus);
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         // WHEN
@@ -118,15 +117,15 @@ class PaymentServiceTest {
 
         // THEN
         assertNotNull(result);
-        verify(paymentMethodRepository, times(1)).save(any(PaymentMethod.class));
-        verify(paymentStatusRepository, times(1)).save(any(PaymentStatus.class));
+        verify(paymentMethodRepository, times(1)).save(any(com.gstech.PlayCommerce.model.PaymentMethod.class));
+        verify(paymentStatusRepository, times(1)).save(any(com.gstech.PlayCommerce.model.PaymentStatus.class));
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void shouldThrowIllegalStateException_WhenPaymentAlreadyExistsForBuy() {
         // GIVEN
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.APROVADO);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.PIX, PayStatus.APROVADO);
 
         when(paymentRepository.findByBuyId(buy.getId())).thenReturn(Optional.of(payment));
 

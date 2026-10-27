@@ -1,5 +1,6 @@
 package com.gstech.PlayCommerce.model;
 
+import com.gstech.PlayCommerce.dto.BuyGameDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,4 +35,10 @@ public class BuyGame {
 
     @Column(name = "preco", nullable = false)
     private BigDecimal price;
+
+    public BuyGame(BuyGameDTO request, Game game) {
+        this.game = game;
+        this.quantity = request.quantity();
+        this.price = request.price();
+    }
 }

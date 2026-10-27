@@ -1,6 +1,6 @@
 package com.gstech.PlayCommerce.controller;
 
-import com.gstech.PlayCommerce.dto.BuyRequestDTO;
+import com.gstech.PlayCommerce.dto.BuyRequest;
 import com.gstech.PlayCommerce.dto.BuyResponseDTO;
 import com.gstech.PlayCommerce.service.BuyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class BuyController {
     private BuyService buyService;
 
     @PostMapping
-    public ResponseEntity<BuyResponseDTO> createBuy(@RequestBody BuyRequestDTO request,
+    public ResponseEntity<BuyResponseDTO> createBuy(@RequestBody BuyRequest request,
             UriComponentsBuilder uriBuilder) {
         var response = buyService.createBuy(request);
         var uri = uriBuilder.path("/buy/{id}").buildAndExpand(response.id()).toUri();

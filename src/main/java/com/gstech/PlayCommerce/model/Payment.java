@@ -1,5 +1,7 @@
 package com.gstech.PlayCommerce.model;
 
+import com.gstech.PlayCommerce.model.enums.PayStatus;
+import com.gstech.PlayCommerce.model.enums.PaymentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +31,21 @@ public class Payment {
     private PaymentMethod paymentMethod;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status_pagamento", nullable = false)
+    @JoinColumn(name = "id_status_pagamento")
     private PaymentStatus paymentStatus;
 
     @Column(nullable = false)
-    private LocalDateTime paymentDate;
+    private LocalDateTime paymentDate = LocalDateTime.now();
+
+    public Payment(PaymentStatus statusPayment, PaymentMethod paymentMethod) {
+        this.paymentStatus = statusPayment;
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Payment(PaymentMethod method, PaymentStatus status) {
+
+        this.paymentMethod = method;
+        this.paymentStatus = status;
+
+    }
 }

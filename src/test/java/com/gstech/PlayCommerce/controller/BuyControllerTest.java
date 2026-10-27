@@ -1,11 +1,8 @@
 package com.gstech.PlayCommerce.controller;
 
-import com.gstech.PlayCommerce.dto.BuyGameResponseDTO;
-import com.gstech.PlayCommerce.dto.BuyRequestDTO;
+import com.gstech.PlayCommerce.dto.BuyRequest;
 import com.gstech.PlayCommerce.dto.BuyResponseDTO;
-import com.gstech.PlayCommerce.dto.PaymentRequestDTO;
-import com.gstech.PlayCommerce.dto.PaymentResponseDTO;
-import com.gstech.PlayCommerce.model.enums.PaymentStatusType;
+import com.gstech.PlayCommerce.model.enums.PayStatus;
 import com.gstech.PlayCommerce.model.enums.PaymentType;
 import com.gstech.PlayCommerce.service.BuyService;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,11 +44,11 @@ class BuyControllerTest {
 
     @Test
     void shouldCreateBuy_WhenRequestIsValid() throws Exception {
-        BuyRequestDTO request = new BuyRequestDTO(1L, List.of(1L),
-                new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.APROVADO));
+        BuyRequest request = new BuyRequest(1L, List.of(1L),
+                new PaymentRequest(PaymentType.PIX, PayStatus.APROVADO));
         BuyResponseDTO response = new BuyResponseDTO(1L, 1L, List.of(), BigDecimal.TEN, LocalDateTime.now(), null);
 
-        when(buyService.createBuy(any(BuyRequestDTO.class))).thenReturn(response);
+        when(buyService.createBuy(any(BuyRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/buy")
                 .contentType(MediaType.APPLICATION_JSON)

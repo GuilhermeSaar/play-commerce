@@ -1,10 +1,9 @@
 package com.gstech.PlayCommerce.service;
 
-import com.gstech.PlayCommerce.dto.BuyRequestDTO;
+import com.gstech.PlayCommerce.dto.BuyRequest;
 import com.gstech.PlayCommerce.dto.BuyResponseDTO;
-import com.gstech.PlayCommerce.dto.PaymentRequestDTO;
 import com.gstech.PlayCommerce.exception.ResourceNotFoundException;
-import com.gstech.PlayCommerce.model.enums.PaymentStatusType;
+import com.gstech.PlayCommerce.model.enums.PayStatus;
 import com.gstech.PlayCommerce.model.enums.PaymentType;
 import com.gstech.PlayCommerce.model.Buy;
 import com.gstech.PlayCommerce.model.Client;
@@ -81,8 +80,8 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long gameId = 1L;
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.APROVADO);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.PIX, PayStatus.APROVADO);
+        BuyRequest request = new BuyRequest(clientId, List.of(gameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(game1));
@@ -102,9 +101,9 @@ class BuyServiceTest {
     void shouldCreateBuyWithMultipleGames_WhenAllGamesAreAvailable() {
         Long clientId = 1L;
         List<Long> gameIds = Arrays.asList(1L, 2L);
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.CARTAO_CREDITO,
-                PaymentStatusType.APROVADO);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, gameIds, paymentRequest);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.CARTAO_CREDITO,
+                PayStatus.APROVADO);
+        BuyRequest request = new BuyRequest(clientId, gameIds, paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game1));
@@ -128,8 +127,8 @@ class BuyServiceTest {
 
         Long clientId = 999L;
         Long gameId = 1L;
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PAYPAL, PaymentStatusType.PENDENTE);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.PAYPAL, PayStatus.PENDENTE);
+        BuyRequest request = new BuyRequest(clientId, List.of(gameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
 
@@ -148,8 +147,8 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long invalidGameId = 999L;
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.BOLETO, PaymentStatusType.RECUSADO);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(invalidGameId), paymentRequest);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.BOLETO, PayStatus.RECUSADO);
+        BuyRequest request = new BuyRequest(clientId, List.of(invalidGameId), paymentRequest);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(gameRepository.findById(invalidGameId)).thenReturn(Optional.empty());
@@ -169,8 +168,8 @@ class BuyServiceTest {
 
         Long clientId = 1L;
         Long gameId = 1L;
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(PaymentType.PIX, PaymentStatusType.PENDENTE);
-        BuyRequestDTO request = new BuyRequestDTO(clientId, List.of(gameId), paymentRequest);
+        PaymentRequest paymentRequest = new PaymentRequest(PaymentType.PIX, PayStatus.PENDENTE);
+        BuyRequest request = new BuyRequest(clientId, List.of(gameId), paymentRequest);
 
         game1.setAvailable(false);
 
