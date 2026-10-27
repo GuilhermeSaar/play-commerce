@@ -1,82 +1,41 @@
-# 🎮 Plataforma de Venda e Gerenciamento de Jogos Digitais
+# PlayCommerce
 
-> **Status do Projeto:** 🚧 *Quase concluído — pendente apenas Docker + PostgreSQL*
+Projeto desenvolvido para fins de prática e estudo de modelagem de dados. A proposta é traduzir o diagrama relacional elaborado na faculdade para entidades Java e mapeamentos com JPA.
 
----
+## Objetivo e escopo
 
-## 🧾 Descrição Geral
+O foco está nas tabelas, chaves e associações do diagrama, não na implementação de uma plataforma comercial completa. As entidades representam clientes, compras, itens de compra, jogos, categorias, pagamentos, formas e status de pagamento, além da biblioteca de jogos do cliente.
 
-O sistema proposto é uma plataforma de **venda e gerenciamento de jogos digitais**, desenvolvida em **Java com Spring Boot**.  
+O modelo permite praticar relações um-para-muitos, um-para-um e muitos-para-muitos. `Compra_Jogo` também representa uma associação com atributos próprios, como quantidade e preço.
 
+Os endpoints e serviços existentes servem como apoio para exercitar a persistência e a consulta dessas estruturas. Eles não implementam regras completas de negócio nem integração real com pagamentos. `link_download` é um atributo do jogo; não há serviço de download. A autenticação JWT presente no código é experimental e não é o objetivo central do projeto.
 
-A aplicação permitirá:
-- Cadastro e autenticação de clientes;
-- Registro e controle dos jogos disponíveis;
-- Processamento de compras e pagamentos;
-- Criação de uma biblioteca digital pessoal com downloads ilimitados.
+## Diagrama
 
-O sistema também gerenciará informações detalhadas sobre cada jogo, incluindo:
-- Nome
-- Descrição
-- Desenvolvedor
-- Publicadora
-- Data de lançamento
-- Preço
-- Categoria
-- Classificação indicativa
+![Diagrama de modelagem](docs/modelagem.jpg)
 
-As transações de compra poderão conter múltiplos jogos e estarão vinculadas a um único pagamento.
+## Tecnologias
 
----
+- Java 17
+- Spring Boot e Spring Data JPA
+- H2 para execução local e testes
+- Driver PostgreSQL
+- Spring Security e JWT (experimento adicional)
+- Maven
+- JUnit e Mockito
 
-## 📋 Requisitos Funcionais
+## Executar
 
-| Código   | Descrição | Status |
-|----------|------------|--------|
-| **RF01** | O sistema deve permitir o cadastro de clientes | ✅ Concluído |
-| **RF02** | O sistema deve permitir a atualização dos dados cadastrais do cliente | ✅ Concluído |
-| **RF03** | O sistema deve permitir a autenticação de clientes (login) para acesso à conta | ✅ Concluído |
-| **RF04** | O sistema deve armazenar informações sobre os jogos disponíveis para venda | ✅ Concluído |
-| **RF05** | O sistema deve permitir a inclusão, atualização e exclusão de jogos da plataforma | ✅ Concluído |
-| **RF06** | Cada compra deve estar associada a um único cliente | ✅ Concluído |
-| **RF07** | O sistema deve permitir que um cliente realize uma compra de um ou mais jogos disponíveis | ✅ Concluído |
-| **RF08** | O sistema deve permitir o registro de um pagamento para cada compra | ✅ Concluído |
-| **RF09** | Cada compra deve possuir apenas um pagamento associado | ✅ Concluído |
-| **RF10** | O sistema deve armazenar informações sobre o pagamento (forma, status e data) | ✅ Concluído |
-| **RF11** | O sistema deve vincular o pagamento à compra e ao cliente correspondente | ✅ Concluído |
-| **RF12** | O sistema deve garantir que todas as compras e pagamentos estejam devidamente registrados | ✅ Concluído |
-| **RF13** | O sistema deve manter uma biblioteca de jogos vinculada a cada cliente, contendo todos os jogos adquiridos | ✅ Concluído |
-| **RF14** | O sistema deve permitir que um jogo esteja presente na biblioteca de vários clientes | ✅ Concluído |✅ Concluído
-| **RF15** | O sistema deve permitir consultar o histórico de compras de um cliente | ✅ Concluído |
-| **RF16** | O sistema deve permitir visualizar os detalhes de cada compra, incluindo jogos e status | ✅ Concluído |
-| **RF17** | O sistema deve permitir consultar a biblioteca de jogos de um cliente autenticado | ✅ Concluído |
+Requer Java 17. Para iniciar a aplicação:
 
+```bash
+bash mvnw spring-boot:run
+```
 
----
+A configuração atual usa H2 em memória e carrega dados de exemplo de `src/main/resources/data.sql`.
 
-## 🏗️ Tecnologias Utilizadas
+## Testes
 
-- ☕ **Java 17**
-- 🌱 **Spring Boot 3**
-- 🧩 **Spring Data JPA**
-- 🧾 **PostgreSQL(Ainda não implementado)**
-- 🔐 **Spring Security + JWT**
-- 🧰 **Maven**
-- 🧪 **JUnit / Mockito**
-
----
-
-## 🗂️ Modelagem de Dados
-
-A modelagem do banco de dados foi criada com base nos requisitos funcionais.  
-Ela representa as principais entidades do sistema.
-
-![Modelagem de Dados](docs/modelagem.jpg)
-
----
-
-## ⚙️ Como Executar o Projeto
-
-1. **Clonar o repositório**
-   ```bash
-   git clone https://github.com/GuilhermeSaar/nome-do-projeto.git
+```bash
+bash mvnw test
+```

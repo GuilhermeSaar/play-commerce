@@ -9,24 +9,29 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "compra_jogo")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class BuyGame {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @EmbeddedId
+    private BuyGameId buyGameId = new BuyGameId();
 
-    @ManyToOne
-    @JoinColumn(name = "buy_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("buyId")
+    @JoinColumn(name = "id_compra")
     private Buy buy;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("gameId")
+    @JoinColumn(name = "id_jogo")
     private Game game;
 
-    private BigDecimal price;
+    @Column(name = "quantidade", nullable = false)
     private Integer quantity;
+
+    @Column(name = "preco", nullable = false)
+    private BigDecimal price;
 }

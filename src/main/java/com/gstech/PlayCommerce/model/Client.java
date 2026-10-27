@@ -26,10 +26,18 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String cpf;
+
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false, unique = true)
     private String phone;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dateRegister;
 
     @Column(nullable = false)
@@ -38,17 +46,11 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Buy> buyList = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "library",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "jogo_id")
-    )
-    private Set<Game> games = new HashSet<>();
-
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Library> libraries = new ArrayList<>();
 
     public Client(ClientRequestDTO request, String password) {
         this.name = request.name();

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "tb_compra")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -25,13 +26,12 @@ public class Buy {
     private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_client", nullable = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Client client;
 
-    @OneToMany(mappedBy = "buy", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "buy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BuyGame> buyGames = new ArrayList<>();
 
-    @OneToOne(mappedBy = "buy", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "buy", cascade = CascadeType.ALL)
     private Payment payment;
-
 }

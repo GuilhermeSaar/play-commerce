@@ -17,9 +17,10 @@ public record GameRequestDTO(
                 String publisher,
                 LocalDate releaseDate,
 
-                @NotNull(message = "Preço é obrigatório") BigDecimal price,
-                String classification,
+                @NotNull(message = "Preço é obrigatório")
+                BigDecimal price,
+                int classification,
 
-                Boolean available,
-                Long categoryId) {
+                Long categoryId
+) {
 }

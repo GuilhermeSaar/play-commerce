@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "tb_pagamento")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -16,25 +17,21 @@ import java.time.LocalDateTime;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_method_id", nullable = false)
-    private PaymentMethod paymentMethod;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_status_id", nullable = false)
-    private PaymentStatus paymentStatus;
-
-    private LocalDateTime paymentDate;
-
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buy_id", nullable = false)
+    @MapsId
+    @JoinColumn(name = "id_compra", nullable = false)
     private Buy buy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "id_forma_pagamento", nullable = false)
+    private PaymentMethod paymentMethod;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_status_pagamento", nullable = false)
+    private PaymentStatus paymentStatus;
+
+    @Column(nullable = false)
+    private LocalDateTime paymentDate;
 }
